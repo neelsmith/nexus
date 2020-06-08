@@ -11,6 +11,8 @@ import scala.scalajs.js.annotation._
 
 @JSExportAll
 case class Nexus(nexusString: String) extends LogSupport {
+  val lines = nexusString.split("\n")
+  require(lines.head.toLowerCase.startsWith("#nexus"), "Invalid NEXUS format: required header line '#NEXUS' missing.")
 
 }
 

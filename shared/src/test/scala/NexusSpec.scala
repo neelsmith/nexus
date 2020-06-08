@@ -1,10 +1,11 @@
 package edu.holycross.shot.nexus
 
 import org.scalatest.FlatSpec
+//import org.scalatest.Assertions._
 
 class NexusSpec extends FlatSpec {
 
-  val src = """
+  val src = """#NEXUS
   """
 
 
@@ -13,9 +14,14 @@ class NexusSpec extends FlatSpec {
     assert(nexus.nexusString == src)
   }
 
-  it should "extract a named block" in pending
+  it should "extract an artibtrarily named block" in {
+    val badSrc = "#noheader"
+    assertThrows[IllegalArgumentException] { // Result type: Assertion
+      val nxs = Nexus(badSrc)
+    }
+  }
   it should "require a header line" in pending
-  it should "require a TAXA block" in pending
+  it should "extract a DATA block" in pending
 
 
   /*
