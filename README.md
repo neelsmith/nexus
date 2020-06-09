@@ -4,7 +4,14 @@ A Scala library to .
 
 
 ## What it is
-`nexus` is a cross-platform library for parsing data in nexus format.
+
+`nexus` is a cross-platform library for parsing data in nexus format.  Binaries for Scala 2.11 and 2.12 on both JVM and ScalaJS platforms are available from bintray, or you can build from source and test using `sbt`.
+
+The parsing is based largely on descriptions of the Nexus file format here:
+
+- <http://wiki.christophchamp.com/index.php?title=NEXUS_file_format>
+- <http://hydrodictyon.eeb.uconn.edu/eebedia/index.php/Phylogenetics:_NEXUS_Format>
+
 
 ## Current version: 1.0.0
 
@@ -14,10 +21,3 @@ Status: experimental.  Partial implementation of some of most basic components o
 ## License
 
 [GPL 3.0](https://opensource.org/licenses/gpl-3.0.html  )
-
-Using, building, testing
-lcs-scs is compiled for both the JVM and ScalaJS using 2.12.
-
-To build from source and test for a given version, use normal sbt commands (compile, test ...).
-
-You can also test or run tasks against all versions, using + before the task name. E.g., sbt "+ test" runs the test task against all versions.
