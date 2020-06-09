@@ -6,7 +6,7 @@ import org.scalatest._
 class JSExportsSpec extends FlatSpec {
 
 	"The Scala export of Nexus"  should "expose the case class and its methods" in {
-		val s = "Test export"
+		val s = "#NEXUS\nTest export"
     assert(Nexus(s).nexusString == s)
 	}
 
