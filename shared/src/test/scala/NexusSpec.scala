@@ -14,13 +14,15 @@ class NexusSpec extends FlatSpec {
     assert(nexus.nexusString == src)
   }
 
-  it should "extract an artibtrarily named block" in {
+  it should "require a header line" in {
     val badSrc = "#noheader"
     assertThrows[IllegalArgumentException] { // Result type: Assertion
       val nxs = Nexus(badSrc)
     }
   }
-  it should "require a header line" in pending
+  it should  "extract an artibtrarily named block" in pending
+  it should  "extract lines for an arbitrarily named block" in pending
+  it should "extract DATA lines" in pending
   it should "extract a DATA block" in pending
 
 
