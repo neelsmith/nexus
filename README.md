@@ -15,7 +15,7 @@ The parsing is based largely on descriptions of the Nexus file format here:
 
 ## Current version: 1.0.0
 
-Status: experimental.  Partial implementation of some of most basic components of Nexus file format.  [Release notes](../releases.md)
+Status: experimental.  Partial implementation of some of most basic components of Nexus file format.  [Release notes](releases.md)
 
 
 ## License
