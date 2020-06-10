@@ -78,5 +78,8 @@ taxa.commandNames
 Commands have names and an argument string.
 
 ```scala
-
+taxa.commands.head.commandName
+// res4: String = "TITLE"
+taxa.commands.head.argsString
+// res5: String = "Taxa"
 ```
