@@ -39,6 +39,8 @@ nexus.blockNames
 
 ## Extract a named block
 
+Block labels are case-insensitive in the NEXUS format.
+
 ```scala
 val taxaOption = nexus.block("taxa")
 ```
