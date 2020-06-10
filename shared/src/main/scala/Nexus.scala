@@ -19,6 +19,7 @@ package edu.holycross.shot.nexus
 
 import wvlet.log._
 import scala.scalajs.js.annotation._
+import scala.annotation.tailrec
 
 @JSExportAll
 case class Nexus(nexusString: String) extends LogSupport {
@@ -47,7 +48,7 @@ case class Nexus(nexusString: String) extends LogSupport {
   // Find command names within a block
   def commandNames(blockName: String) : Vector[String] = {
     val textChunks = block(blockName).split(";").toVector
-    textChunks.map(d => d.trim.replaceFirst("[ ].+", "")).distinct
+    textChunks.map(d => d.trim.replaceFirst("[ ].+", "").replaceFirst("[\\W].*", "")).distinct.filter(_.nonEmpty)
   }
 
   /** Extract a Nexus command from a Nexus block.
@@ -120,7 +121,7 @@ case class Nexus(nexusString: String) extends LogSupport {
   * @param results Accumulated lines to keep so far.
   * @param inBlock True if we have seen opening pattern.
   */
-  def extractLines(srcLines: Vector[String],
+@tailrec final def extractLines(srcLines: Vector[String],
     blockInit: String,
     blockEnd: String,
     results: Vector[String] = Vector.empty[String],
