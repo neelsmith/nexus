@@ -10,13 +10,6 @@ package edu.holycross.shot.nexus
 * http://hydrodictyon.eeb.uconn.edu/eebedia/index.php/Phylogenetics:_NEXUS_Format
 */
 
-
-
-
-/* Some importat blocks that might be worth coding high-order methods for:
-
-*/
-
 import wvlet.log._
 import scala.scalajs.js.annotation._
 import scala.annotation.tailrec
