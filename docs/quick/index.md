@@ -11,17 +11,28 @@ title: Quick start
 Import the library, and use the `NexusSource` object to load a dataset from a URL or local file.
 
 
-```scala:mdoc
-import edu.holcyross.shot.nexus._
+```scala
+import edu.holycross.shot.nexus._
 
 val dataUrl = "https://raw.githubusercontent.com/neelsmith/nexus/master/jvm/src/test/resources/CaveTrechineCOI.nex"
-val nexus = NexusSource.fromURL(dataUrl)
+val nexus = NexusSource.fromUrl(dataUrl)
 
 // or NexusSource.fromFile("FILE_NAME")
 
 ```
 
 See what blocks it contains:
-```scala:mdoc
+```scala
 nexus.blockNames
+// res0: Vector[String] = Vector(
+//   "TAXA",
+//   "CHARACTERS",
+//   "ASSUMPTIONS",
+//   "CODONS",
+//   "NOTES",
+//   "LABELS",
+//   "SETS",
+//   "MESQUITECHARMODELS",
+//   "MESQUITE"
+// )
 ```
