@@ -28,7 +28,7 @@ twitter_username:
 github_username:  neelsmith
 
 # Build settings
-theme: jekyll-theme-minimal
+theme: jekyll-theme-leap-day
 plugins:
   - jekyll-feed
 
