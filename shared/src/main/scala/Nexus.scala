@@ -41,7 +41,7 @@ case class Nexus(nexusString: String) extends LogSupport {
   */
   def blockNames: Vector[String] = {
     val blockBeginnings = lines.filter(_.trim.toLowerCase.startsWith("begin"))
-    blockBeginnings.map(ln => ln.replaceFirst("(?i)[ ]*begin", "").replaceFirst(";[ ]*$",""))
+    blockBeginnings.map(ln => ln.replaceFirst("(?i)[ ]*begin[ ]+", "").replaceFirst(";[ ]*$",""))
   }
 
 
@@ -81,7 +81,19 @@ case class Nexus(nexusString: String) extends LogSupport {
   * @param blockLabel Label of block to extract.
   */
   def block(blockLabel: String) : String = {
-    linesForBlock(blockLabel, true).mkString("\n")
+    val matches = linesForBlockMulti(blockLabel, true)
+    if (matches.size != 1) {
+      throw new Exception("Error: found more than one block named " + blockLabel)
+    } else {
+      matches.head.mkString("\n")
+    }
+    //linesForBlock(blockLabel, true).mkString("\n")
+  }
+
+
+
+  def blocks(blockLabel: String) : String = {
+    linesForBlockMulti(blockLabel, true).map(bl => bl.mkString("\n")).mkString("\n")
   }
 
   /** Extract lines from source data contained with a named block.
@@ -91,9 +103,7 @@ case class Nexus(nexusString: String) extends LogSupport {
   */
   def linesForBlock(blockLabel: String, includeComments: Boolean = false) : Vector[String] = {
     linesForBlock(blockLabel, lines, includeComments )
-
   }
-
   /**  Extract lines from source data contained with a named block.
   *
   * @param blockLabel Label of block to extract.
@@ -111,6 +121,18 @@ case class Nexus(nexusString: String) extends LogSupport {
   }
 
 
+  def linesForBlockMulti(blockLabel: String, includeComments: Boolean = false) : Vector[Vector[String]] = {
+    linesForBlockMulti(blockLabel, lines, includeComments )
+  }
+  def linesForBlockMulti(blockLabel: String,
+    srcLines: Vector[String],
+    includeComments: Boolean): Vector[Vector[String]] = {
+
+    val blockInit = "begin " + blockLabel.toLowerCase + ";"
+    val blockEnd = "end;"
+    // remove comments here if needed
+    Nexus.extractLinesMulti(srcLines, blockInit, blockEnd)
+  }
 
   @tailrec final def extractLines(srcLines: Vector[String],
     blockInit: String,
@@ -174,7 +196,12 @@ object Nexus extends LogSupport {
         } else if (inBlock && srcLines.head.trim.toLowerCase.endsWith(blockEnd.toLowerCase)) {
           // Found end of block:
           val newVal = srcLines.head.trim.replaceFirst("(?i)" + blockEnd,"")
-          val newCurrent = current :+ newVal
+
+          val newCurrent = newVal match {
+            case "" => current
+            case _ => current :+ newVal
+          }
+
           val newResults = results :+ newCurrent
           extractLinesMulti(srcLines.tail, blockInit, blockEnd , Vector.empty[String], newResults, false)
 
@@ -184,7 +211,11 @@ object Nexus extends LogSupport {
             debug("FOUND BLOCK BEGIN")
             // Found block beginning:
             val newVal = srcLines.head.trim.replaceFirst("(?i)" + blockInit,"")
-            val newSrcLines = newVal +: srcLines.tail
+            val newSrcLines = newVal match {
+              case "" => srcLines.tail
+              case _ => newVal +: srcLines.tail
+            }
+
             debug("Found init, prepending new Val " + newVal)
             extractLinesMulti(newSrcLines, blockInit, blockEnd, current, results, true)
 
