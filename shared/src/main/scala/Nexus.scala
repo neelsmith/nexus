@@ -53,7 +53,7 @@ case class Nexus(nexusString: String) extends LogSupport {
   * @param commandName Name of command to extract.
   */
   def commandLines(blockName: String, commandName: String): Vector[Vector[String]] = {
-    val commands = for (bl <- linesForBlockMulti(blockName)) yield {
+    val commands = for (bl <- linesForBlocks(blockName)) yield {
       val cmds = Nexus.extractLinesMulti(bl, commandName,";")
       cmds
     }
@@ -84,7 +84,7 @@ case class Nexus(nexusString: String) extends LogSupport {
   * @param blockLabel Label of block to extract.
   */
   def block(blockLabel: String) : String = {
-    val matches = linesForBlockMulti(blockLabel, true)
+    val matches = linesForBlocks(blockLabel, true)
     if (matches.size != 1) {
       throw new Exception("Error: found more than one block named " + blockLabel)
     } else {
@@ -94,7 +94,7 @@ case class Nexus(nexusString: String) extends LogSupport {
 
 
   def blocks(blockLabel: String) : String = {
-    linesForBlockMulti(blockLabel, true).map(bl => bl.mkString("\n")).mkString("\n")
+    linesForBlocks(blockLabel, true).map(bl => bl.mkString("\n")).mkString("\n")
   }
 
   /** Extract lines from source data contained with a named block.
@@ -114,7 +114,7 @@ case class Nexus(nexusString: String) extends LogSupport {
   def linesForBlock(blockLabel: String,
     srcLines: Vector[String],
     includeComments: Boolean): Vector[String] = {
-      val blocks = linesForBlockMulti(blockLabel, srcLines, includeComments)
+      val blocks = linesForBlocks(blockLabel, srcLines, includeComments)
       blocks.size match {
         case 0 => Vector.empty[String]
         case 1 => blocks(0)
@@ -123,10 +123,10 @@ case class Nexus(nexusString: String) extends LogSupport {
   }
 
 
-  def linesForBlockMulti(blockLabel: String, includeComments: Boolean = false) : Vector[Vector[String]] = {
-    linesForBlockMulti(blockLabel, lines, includeComments )
+  def linesForBlocks(blockLabel: String, includeComments: Boolean = false) : Vector[Vector[String]] = {
+    linesForBlocks(blockLabel, lines, includeComments )
   }
-  def linesForBlockMulti(blockLabel: String,
+  def linesForBlocks(blockLabel: String,
     srcLines: Vector[String],
     includeComments: Boolean): Vector[Vector[String]] = {
 
@@ -136,47 +136,20 @@ case class Nexus(nexusString: String) extends LogSupport {
     Nexus.extractLinesMulti(srcLines, blockInit, blockEnd)
   }
 
-/*
-  @tailrec final def extractLines(srcLines: Vector[String],
-    blockInit: String,
-    blockEnd: String,
-    results: Vector[String] = Vector.empty[String],
-    inBlock: Boolean = false): Vector[String] = {
-      if (srcLines.isEmpty) {
-        // Got to end of input without identifying correctly structured block!
-        inBlock match {
-          case false => throw new Exception("Did not find beginning label for unit " + blockInit)
-          case true => throw new Exception("Did not find endinglabel for unit " + blockInit)
-        }
-
-      } else if (inBlock && srcLines.head.toLowerCase.trim ==  blockEnd) {
-        // Found end of block:
-        results
-
-      } else {
-        if (srcLines.head.toLowerCase.trim == blockInit) {
-          // Found block beginning:
-          extractLines(srcLines.tail, blockInit, blockEnd , results, true)
-
-        } else {
-          if (inBlock) {
-            // Accumulate results:
-            val newResults = results :+ srcLines.head
-            extractLines(srcLines.tail, blockInit, blockEnd, newResults, inBlock)
-
-          } else {
-            // ignore
-            extractLines(srcLines.tail, blockInit, blockEnd, results, inBlock)
-          }
-        }
-      }
-  }*/
 }
 
-
+/** The Nexus object provides some string processing methods that
+* implement specific conventions of the NEXUS file format.
+*/
 object Nexus extends LogSupport {
 
 
+  /** Recursively extract the command name from a Nexus command chunk
+  * character by character.
+  *
+  * @param src Command string.
+  * @param result Characters extracted so far.
+  */
   @tailrec final def extractCommand(src: String, result: String = "") : String = {
     if (src.isEmpty) {
       result

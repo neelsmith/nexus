@@ -19,7 +19,7 @@ class NexusSpecMulti extends FlatSpec {
       ;
     end;
     more data here but we're already done."""
-    val taxa = Nexus(nexusString).linesForBlockMulti("taxa")
+    val taxa = Nexus(nexusString).linesForBlocks("taxa")
     assert(taxa.size == 1)
 
     val expectedLines = 8
@@ -34,5 +34,5 @@ class NexusSpecMulti extends FlatSpec {
   }
 
 
-  
+
 }
