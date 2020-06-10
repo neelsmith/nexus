@@ -32,7 +32,8 @@ class NexusObjectSpec extends FlatSpec {
 
   it should "find NEXUS command arguments within a command line" in {
     val cmds = nexus.commands("taxa")
-    println(cmds)
+    val expectedLines = 3
+    assert(cmds.size == expectedLines)
   }
 
 }
