@@ -1,4 +1,4 @@
 ## Release notes
 
 
-**1.0.0**: initial release.  Supports extracting named blocks from Nexus source as Strings or Vectors of lines.  Parses content of DATA blocks for data matrix.
+**1.0.0**: initial release.  Supports parsing a string of Nexus data into a `NexusData`, which contains a list of `NexusBlock`s, each of which contains a list of `NexusCommand`s.
