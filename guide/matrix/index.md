@@ -16,12 +16,48 @@ val nexus = NexusSource.fromUrl(dataUrl)
 ```
 
 
+## The hard way
+
 Using generic methods to extract the contents of a `Matrix`:
+
+- get the "CHARACTERS" block
+- select the "Matrix" command
+- get the command's arguments
+
+Too much work, and you're still left with a string to parse out labels and data!
 
 ```scala mdoc:invisible
 val commands = nexus.block("CHARACTERS").get.commands.filter(_.commandName.toLowerCase == "matrix")
 ```
 
 ```scala mdoc
-commands.map(cmd => cmd.argsString)
+commands.map(cmd => cmd.argsString).head
+```
+
+
+## The easy way
+
+The better choice is the `matrix` method:
+
+```scala mdoc:silent
+nexus.matrix
+```
+
+This creates a `NexusMatrix` object, which has a Vector of `NexusCharacters`, called `rows`.
+
+```scala mdoc
+nexus.matrix.rows.size
+```
+
+The `NexusMatrix` also gives us access to the labels and data for each row.  Let's sample a few:
+
+```scala mdoc
+nexus.matrix.labels.take(10)
+nexus.matrix.data.take(10)
+```
+
+If you want to combine labels and data in a text string with a separating String of your choice, you can use the `delimited` method
+
+```scala mdoc
+nexus.matrix.delimited("#")
 ```

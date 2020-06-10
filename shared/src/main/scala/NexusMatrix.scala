@@ -1,12 +1,15 @@
 package edu.holycross.shot.nexus
 
-case class NexusMatrix(characterLines: Vector[NexusCharacters]) {
+case class NexusMatrix(rows: Vector[NexusCharacters]) {
 
   /** Format delimited-text representation.
   *
   * @param separator String value to separate label and characters.
   */
   def delimited(separator: String = "#") : String = {
-    characterLines.map(_.delimited(separator)).mkString("\n")
+    rows.map(_.delimited(separator)).mkString("\n")
   }
+
+  def labels : Vector[String] = rows.map(_.label)
+  def data : Vector[String] = rows.map(_.characters)
 }

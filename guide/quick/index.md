@@ -64,5 +64,6 @@ taxa.commandNames
 Commands have names and an argument string.
 
 ```scala mdoc
-
+taxa.commands.head.commandName
+taxa.commands.head.argsString
 ```

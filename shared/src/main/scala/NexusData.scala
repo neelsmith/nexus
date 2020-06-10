@@ -41,8 +41,8 @@ case class NexusData(blocks: Vector[NexusBlock]) {
 
   /**
   */
-  def dataMatrix : NexusMatrix = {
-    val cmds = block("data").get.commands.filter(_.commandName.toLowerCase == "matrix").head.argsString
+  def matrix(blockName: String) : NexusMatrix = {
+    val cmds = block(blockName).get.commands.filter(_.commandName.toLowerCase == "matrix").head.argsString
     val commandLines = cmds.split("\n").toVector.map(_.trim)
 
     val nexusCharacters = commandLines.map (ln => {
@@ -52,9 +52,16 @@ case class NexusData(blocks: Vector[NexusBlock]) {
 
     NexusMatrix(nexusCharacters)
   }
+
+
+  def matrix: NexusMatrix = {
+    if (blockNames.map(_.toLowerCase).contains("data")) {
+      matrix("data")
+    } else {
+      matrix("characters")
+    }
+  }
 }
-
-
 
 /** Utility object to create [[NexusData]] from a String in NEXUS format.*/
 object NexusData {
