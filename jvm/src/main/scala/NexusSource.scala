@@ -10,7 +10,12 @@ import scala.io.Source
 
 object NexusSource extends LogSupport {
 
-  def fromFile(fName: String) : NexusParser = {
+  def fromFile(fName: String) : NexusData = {
+    val nexusData = Source.fromFile(fName).mkString("")
+    NexusData(nexusData)
+  }
+
+  def fileParser(fName: String) : NexusParser = {
     val nexusData = Source.fromFile(fName).mkString("")
     NexusParser(nexusData)
   }

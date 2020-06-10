@@ -8,7 +8,7 @@ class BeetlesSourceSpec extends FlatSpec {
 
 
   "Nexus" should "find commands in the CHARACTERS block" in {
-    val nexus = NexusSource.fromFile(f)
+    val nexus = NexusSource.fileParser(f)
     val cmds = nexus.commandNames("CHARACTERS")
 
     val expected = Vector("TITLE", "DIMENSIONS", "FORMAT", "MATRIX")
