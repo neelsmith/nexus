@@ -48,10 +48,13 @@ case class Nexus(nexusString: String) extends LogSupport {
   // Find command names within a block
   def commandNames(blockName: String) : Vector[String] = {
     val textChunks = block(blockName).split(";").toVector
-    textChunks.map(d => d.trim.replaceFirst("[ ].+", "").replaceFirst("[\\W].*", "")).distinct.filter(_.nonEmpty)
+    val trimmedUp = textChunks.map(chunk => Nexus.extractCommand(chunk.trim))
+    trimmedUp.distinct.filter(_.nonEmpty)
   }
 
-  /** Extract a Nexus command from a Nexus block.
+  /** Extract all occurrences of a Nexus command from Nexus blocks
+  * of a given name.  Vectors of command lines are further grouped in Vectors,
+  * one Vector per block.
   *
   * @param blockName Name of block.
   * @param commandName Name of command to extract.
@@ -62,8 +65,6 @@ case class Nexus(nexusString: String) extends LogSupport {
       cmds
     }
     commands.flatten
-    //extractLines(linesForBlock(blockName), commandName, ";")
-
   }
 
   /** Extract unaltered text contents for a command within a block.
@@ -97,7 +98,6 @@ case class Nexus(nexusString: String) extends LogSupport {
       matches.head.mkString("\n")
     }
   }
-
 
 
   def blocks(blockLabel: String) : String = {
@@ -182,17 +182,29 @@ case class Nexus(nexusString: String) extends LogSupport {
 
 
 object Nexus extends LogSupport {
-   Logger.setDefaultLogLevel(LogLevel.INFO)
-    /** Recursively extract lines from a list of lines contained
-    * by a given opening/closing patterns. Opening/closing patterns are the
-    * case-insensitive contents of a line that may be preceded or followed by white space.
-    *
-    * @param srcLines List of lines to process.
-    * @param blockInit Opening pattern.
-    * @param blockEnd Closing pattern.
-    * @param results Accumulated lines to keep so far.
-    * @param inBlock True if we have seen opening pattern.
-    */
+
+
+  @tailrec final def extractCommand(src: String, result: String = "") : String = {
+    if (src.isEmpty) {
+      result
+    } else if (src.head.isWhitespace) {
+      result
+    } else {
+      extractCommand(src.tail, result :+ src.head)
+    }
+  }
+
+  /** Recursively extract lines from a list of lines contained
+  * by a given opening/closing patterns. Opening/closing patterns are the
+  * case-insensitive contents of a line that may be preceded or followed by white space.
+  *
+  * @param srcLines List of lines to process.
+  * @param blockInit Opening pattern.
+  * @param blockEnd Closing pattern.
+  * @param current Accumulated lines in current block.
+  * @param results Vectors of accumulated lines for each block.
+  * @param inBlock True if we have seen opening pattern.
+  */
   @tailrec final def extractLinesMulti(srcLines: Vector[String],
       blockInit: String,
       blockEnd: String,
@@ -204,9 +216,9 @@ object Nexus extends LogSupport {
           results
 
         } else if (inBlock && srcLines.head.trim.toLowerCase.endsWith(blockEnd.toLowerCase)) {
-          // Found end of block:
+          // Found end-of-block pattern. Check for a value preceding it
+          // in the line:
           val newVal = srcLines.head.trim.replaceFirst("(?i)" + blockEnd,"")
-
           val newCurrent = newVal match {
             case "" => current
             case _ => current :+ newVal
@@ -219,7 +231,8 @@ object Nexus extends LogSupport {
           debug(s"blockInit: ${blockInit}\nLine: #${srcLines.head.trim}#")
           if (srcLines.head.trim.toLowerCase.startsWith(blockInit.toLowerCase)) {
             debug("FOUND BLOCK BEGIN")
-            // Found block beginning:
+            // Found block beginning. Check for a value following it
+            // in the line:
             val newVal = srcLines.head.trim.replaceFirst("(?i)" + blockInit,"")
             val newSrcLines = newVal match {
               case "" => srcLines.tail
@@ -232,14 +245,12 @@ object Nexus extends LogSupport {
           } else {
             debug("NOT in block begin")
             if (inBlock) {
-              // Accumulate results:
-
-              //val newResults = results :+ srcLines.head
+              // Add line to accumulated results:
               val newCurrent = current :+ srcLines.head
               extractLinesMulti(srcLines.tail, blockInit, blockEnd, newCurrent, results, inBlock)
 
             } else {
-              // ignore
+              // Not in block: ignore line
               extractLinesMulti(srcLines.tail, blockInit, blockEnd, current, results, inBlock)
             }
           }
