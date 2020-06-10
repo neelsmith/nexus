@@ -49,7 +49,7 @@ class NexusDataSpec extends FlatSpec {
   }
 
   it should "extract a Matrix command from a data block" in {
-    val matrix = nexusData.dataMatrix
+    val matrix = nexusData.matrix
     val expected = """Cow#ATGGC ATATC CCATA CAACT AGGAT TCCAA GATGC AACAT CACCA ATCAT AGAAG AACTA
 Carp#ATGGCACACCCAACGCAACTAGGTTTCAAGGACGCGGCCATACCCGTTATAGAGGAACTT
 Chicken#ATGGCCAACCACTCCCAACTAGGCTTTCAAGACGCCTCATCCCCCATCATAGAAGAGCTC

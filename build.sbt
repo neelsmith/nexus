@@ -17,7 +17,7 @@ lazy val crossed = crossProject(JSPlatform, JVMPlatform).in(file(".")).
   // shared settings:
   settings(
     name := "nexus",
-    version := "1.0.0",
+    version := "1.1.0",
     licenses += ("GPL-3.0",url("https://opensource.org/licenses/gpl-3.0.html")),
 
     resolvers += Resolver.jcenterRepo,
@@ -46,5 +46,8 @@ lazy val docs = project       // new documentation project
   .enablePlugins(MdocPlugin)
   .settings(
     mdocIn := file("guide"),
-    mdocOut := file("docs")
+    mdocOut := file("docs"),
+    mdocVariables := Map(
+     "VERSION" -> "1.1.0"
+   )
   )

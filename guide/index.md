@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Nexus library
+title: "Nexus library, version @VERSION@"
 ---
 
 The `nexus` package is a cross-platform library for parsing data in NEXUS format.
