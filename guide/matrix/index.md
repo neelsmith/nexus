@@ -26,7 +26,7 @@ Using generic methods to extract the contents of a `Matrix`:
 
 Too much work, and you're still left with a string to parse out labels and data!
 
-```scala mdoc:invisible
+```scala mdoc:silent
 val commands = nexus.block("CHARACTERS").get.commands.filter(_.commandName.toLowerCase == "matrix")
 ```
 
