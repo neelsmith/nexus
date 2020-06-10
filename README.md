@@ -27,6 +27,6 @@ Implements basic syntax of Nexus file format, parsing source into blocks contain
 
 ## Documentation
 
-- [http://neelsmith.github.io/nexus/].
+- [http://neelsmith.github.io/nexus/](http://neelsmith.github.io/nexus/).
 
 Build the docs locally in `sbt`:  `docs mdoc` (Results are written to the `docs` directory.)
