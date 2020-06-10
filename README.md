@@ -1,6 +1,6 @@
 # `nexus`
 
-A Scala library for working data in NEXUS format.
+A Scala library for working with data in [NEXUS format](https://en.wikipedia.org/wiki/Nexus_file).
 
 
 ## What it is
