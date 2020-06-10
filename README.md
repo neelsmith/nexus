@@ -1,6 +1,6 @@
 # `nexus`
 
-A Scala library to .
+A Scala library for working data in NEXUS format.
 
 
 ## What it is
@@ -23,3 +23,10 @@ Implements basic syntax of Nexus file format, parsing source into blocks contain
 ## License
 
 [GPL 3.0](https://opensource.org/licenses/gpl-3.0.html  )
+
+
+## Documentation
+
+In progress at [http://neelsmith.github.io/nexus/].
+
+Build locally in `sbt`:  `docs mdoc` (Results are written to the `mdocs` directory.)
