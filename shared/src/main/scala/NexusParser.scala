@@ -27,21 +27,9 @@ case class NexusParser(nexusString: String) extends LogSupport {
 
 
 
+  /**  Create [[NexusBlock]]s from the Nexus source data.  */
   def nexusBlocks: Vector[NexusBlock] = {
-    blockNames.map (blockName => {
-      val cmdNames = commandNames(blockName)
-      val lines = for (cName <- cmdNames) yield {
-        command(blockName, cName )
-      }
-
-      val nexusCommands = lines.map(ln => {
-        val cName = NexusParser.extractCommandName(ln)
-        val cmd =  NexusCommand(cName, "DATA HERE")
-        cmd
-      })
-      NexusBlock(blockName, nexusCommands)
-    }
-    )
+    blockNames.map (blockName => NexusBlock(blockName, nexusCommands(blockName)))
   }
 
   /** Identify all block names in this Nexus.
@@ -65,8 +53,21 @@ case class NexusParser(nexusString: String) extends LogSupport {
   def commandNames(blockName: String) : Vector[String] = {
     val textChunks = block(blockName).split(";").toVector
     val trimmedUp = textChunks.map(chunk => NexusParser.extractCommandName(chunk.trim))
-    trimmedUp.distinct.filter(_.nonEmpty)
+    trimmedUp.filter(_.nonEmpty)
   }
+
+ def commandArgs(blockName: String) : Vector[String] = {
+   val textChunks = block(blockName).split(";").toVector
+   val trimmedUp = textChunks.map(chunk => NexusParser.extractCommandArgs(chunk.trim))
+   trimmedUp.filter(_.nonEmpty)
+ }
+
+ def nexusCommands(blockName: String) : Vector[NexusCommand] = {
+   for ( (nm,arg) <- commandNames(blockName) zip commandArgs(blockName)) yield {
+     NexusCommand(nm, arg)
+   }
+ }
+
 
   /** Chunk the text of a NEXUS block into a series of
   * Nexus commands.
@@ -109,12 +110,12 @@ case class NexusParser(nexusString: String) extends LogSupport {
   /** Extract lines for the data block.
   * Assuming NEXUS files can only have one data block?
   */
-  def dataLines : Vector[String] = linesForBlock("data")
+  //def dataLines : Vector[String] = linesForBlock("data")
 
   /** Extract unaltered contents of DATA block.
   * Assuming NEXUS files can only have one data block?
   */
-  def dataBlock : String = block("data")
+  //def dataBlock : String = block("data")
 
   /** Extract unaltered text contents of a labelled block
   * that appears only once in the Nexus source.
@@ -220,6 +221,23 @@ object NexusParser extends LogSupport {
       result
     } else {
       extractCommandName(src.tail, result :+ src.head)
+    }
+  }
+
+
+
+  /** Recursively extract command arguments from a trimmed Nexus command chunk.
+  * Note that this assumes you will have no leading white space before the command name!
+  *
+  * @param cmd Nexus command string.
+  */
+  @tailrec final def extractCommandArgs(cmd: String) : String = {
+    if (cmd.isEmpty) {
+      cmd
+    } else if (cmd.head.isWhitespace) {
+      cmd.trim
+    } else {
+      extractCommandArgs(cmd.tail)
     }
   }
 

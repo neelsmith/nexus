@@ -51,8 +51,48 @@ class NexusSpec extends FlatSpec {
       Tree tree3 = ((Scarabaeus,Drosophila),Aranaeus);
     END;"""
     val nexus = NexusParser(nexusString)
-    val expectedCommands = Vector("Translate", "Tree")
+    val expectedCommands = Vector("Translate", "Tree", "Tree", "Tree")
     assert(nexus.commandNames("TREES") == expectedCommands)
+  }
+
+
+
+  it should "find command args within a block" in {
+    val nexusString = """#nexus
+    BEGIN TAXA;
+    TaxLabels Scarabaeus Drosophila Aranaeus;
+    END;
+
+    BEGIN TREES;
+      Translate beetle Scarabaeus, fly Drosophila, spider Aranaeus;
+      Tree tree1 = ((1,2),3);
+      Tree tree2 = ((beetle,fly),spider);
+      Tree tree3 = ((Scarabaeus,Drosophila),Aranaeus);
+    END;"""
+    val nexus = NexusParser(nexusString)
+    val args = nexus.commandArgs("TREES")
+ val expectedArgs = Vector("beetle Scarabaeus, fly Drosophila, spider Aranaeus",
+ "tree1 = ((1,2),3)", "tree2 = ((beetle,fly),spider)", "tree3 = ((Scarabaeus,Drosophila),Aranaeus)")
+    assert(expectedArgs == args)
+  }
+
+
+  it should "find create NexusCommand objects for a block" in {
+    val nexusString = """#nexus
+    BEGIN TAXA;
+    TaxLabels Scarabaeus Drosophila Aranaeus;
+    END;
+
+    BEGIN TREES;
+      Translate beetle Scarabaeus, fly Drosophila, spider Aranaeus;
+      Tree tree1 = ((1,2),3);
+      Tree tree2 = ((beetle,fly),spider);
+      Tree tree3 = ((Scarabaeus,Drosophila),Aranaeus);
+    END;"""
+    val nexus = NexusParser(nexusString)
+    val ncs = nexus.nexusCommands("TREES")
+    val expectedCommands = 4
+    assert(ncs.size == expectedCommands)
   }
 
   it should  "extract lines for an arbitrarily named block" in {
@@ -98,69 +138,6 @@ class NexusSpec extends FlatSpec {
 
   it should "support omitting comments" in pending
 
-  it should "extract a DATA block" in {
-    val nexusSrc = """#NEXUS
-    bogus line we're ignoring in this example, since we're
-    only reading the data block...
-
-    BEGIN DATA;
-            Dimensions NTax=10 NChar=60;
-            Format DataType=DNA Interleave=yes Gap=- Missing=?;
-            Matrix
-    Cow     ATGGC ATATC CCATA CAACT AGGAT TCCAA GATGC AACAT CACCA ATCAT AGAAG AACTA
-    Carp    ATGGCACACCCAACGCAACTAGGTTTCAAGGACGCGGCCATACCCGTTATAGAGGAACTT
-    Chicken ATGGCCAACCACTCCCAACTAGGCTTTCAAGACGCCTCATCCCCCATCATAGAAGAGCTC
-    Human   ATGGCACATGCAGCGCAAGTAGGTCTACAAGACGCTACTTCCCCTATCATAGAAGAGCTT
-    Loach   ATGGCACATCCCACACAATTAGGATTCCAAGACGCGGCCTCACCCGTAATAGAAGAACTT
-    Mouse   ATGGCCTACCCATTCCAACTTGGTCTACAAGACGCCACATCCCCTATTATAGAAGAGCTA
-    Rat     ATGGCTTACCCATTTCAACTTGGCTTACAAGACGCTACATCACCTATCATAGAAGAACTT
-    Seal    ATGGCATACCCCCTACAAATAGGCCTACAAGATGCAACCTCTCCCATTATAGAGGAGTTA
-    Whale   ATGGCATATCCATTCCAACTAGGTTTCCAAGATGCAGCATCACCCATCATAGAAGAGCTC
-    Frog    ATGGCACACCCATCACAATTAGGTTTTCAAGACGCAGCCTCTCCAATTATAGAAGAATTA
-    ;
-    END;
-
-    more stuff continuing on but outside data block..."""
-
-    val nexus = NexusParser(nexusSrc)
-    val expectedLines = 14
-    val dblock = nexus.dataBlock
-    assert(dblock.split("\n").size == expectedLines)
-    val expectedFirst = "Dimensions NTax=10 NChar=60;"
-    assert(dblock.split("\n").head.trim == expectedFirst)
-    assert(dblock.split("\n").last.trim == ";")
-  }
-  it should "extract DATA lines" in {
-    val nexusSrc = """#NEXUS
-    bogus line we're ignoring in this example, since we're
-    only reading the data block...
-
-    BEGIN DATA;
-            Dimensions NTax=10 NChar=60;
-            Format DataType=DNA Interleave=yes Gap=- Missing=?;
-            Matrix
-    Cow     ATGGC ATATC CCATA CAACT AGGAT TCCAA GATGC AACAT CACCA ATCAT AGAAG AACTA
-    Carp    ATGGCACACCCAACGCAACTAGGTTTCAAGGACGCGGCCATACCCGTTATAGAGGAACTT
-    Chicken ATGGCCAACCACTCCCAACTAGGCTTTCAAGACGCCTCATCCCCCATCATAGAAGAGCTC
-    Human   ATGGCACATGCAGCGCAAGTAGGTCTACAAGACGCTACTTCCCCTATCATAGAAGAGCTT
-    Loach   ATGGCACATCCCACACAATTAGGATTCCAAGACGCGGCCTCACCCGTAATAGAAGAACTT
-    Mouse   ATGGCCTACCCATTCCAACTTGGTCTACAAGACGCCACATCCCCTATTATAGAAGAGCTA
-    Rat     ATGGCTTACCCATTTCAACTTGGCTTACAAGACGCTACATCACCTATCATAGAAGAACTT
-    Seal    ATGGCATACCCCCTACAAATAGGCCTACAAGATGCAACCTCTCCCATTATAGAGGAGTTA
-    Whale   ATGGCATATCCATTCCAACTAGGTTTCCAAGATGCAGCATCACCCATCATAGAAGAGCTC
-    Frog    ATGGCACACCCATCACAATTAGGTTTTCAAGACGCAGCCTCTCCAATTATAGAAGAATTA
-    ;
-    END;
-
-    more stuff continuing on but outside data block..."""
-
-    val nexus = NexusParser(nexusSrc)
-    val expectedLines = 14
-    assert(nexus.dataLines.size == expectedLines)
-    val expectedFirst = "Dimensions NTax=10 NChar=60;"
-    assert(nexus.dataLines.head.trim == expectedFirst)
-    assert(nexus.dataLines.last.trim == ";")
-  }
 
   it should "extract a command from a block" in {
     val nexusSrc = """#NEXUS

@@ -24,11 +24,15 @@ class NexusObjectSpec extends FlatSpec {
     assert(extract.head.size == expectedLines)
   }
 
-  it should "find NEXUS command name within a command line" in {
-
+  it should "find the NEXUS command name within a command line" in {
     val cnames = nexus.commandNames("taxa")
-    println(cnames)
+    val expected = Vector("TITLE", "DIMENSIONS", "TAXLABELS")
+    assert(cnames == expected)
+  }
 
+  it should "find NEXUS command arguments within a command line" in {
+    val cmds = nexus.commands("taxa")
+    println(cmds)
   }
 
 }
