@@ -41,6 +41,18 @@ class NexusDataSpec extends FlatSpec {
     }
   }
 
+
+  it should "retrieve blocks by case-insensitive name" in {
+    val dataBlock = nexusData.block("data").get
+    assert(dataBlock.label == "DATA")
+    assert(dataBlock.commands.size == 3)
+  }
+
+  it should "extract a Matrix command from a data block" in {
+    val matrix = nexusData.dataMatrix
+    println(matrix.mkString("\n"))
+  }
+
   it should "extract a DATA block " in pending /*{
     val nexusSrc = """#NEXUS
     bogus line we're ignoring in this example, since we're
