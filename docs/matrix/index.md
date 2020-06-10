@@ -20,6 +20,9 @@ Using generic methods to extract the contents of a `Matrix`:
 
 Too much work, and you're still left with a string to parse out labels and data!
 
+```scala
+val commands = nexus.block("CHARACTERS").get.commands.filter(_.commandName.toLowerCase == "matrix")
+```
 
 ```scala
 commands.map(cmd => cmd.argsString).head
