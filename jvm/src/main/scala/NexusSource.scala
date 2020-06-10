@@ -15,6 +15,11 @@ object NexusSource extends LogSupport {
     NexusData(nexusData)
   }
 
+  def fromUrl(url: String) : NexusData = {
+    val nexusData = Source.fromURL(url).mkString("")
+    NexusData(nexusData)
+  }
+
   def fileParser(fName: String) : NexusParser = {
     val nexusData = Source.fromFile(fName).mkString("")
     NexusParser(nexusData)

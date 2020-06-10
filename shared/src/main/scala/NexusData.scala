@@ -8,6 +8,10 @@ package edu.holycross.shot.nexus
 case class NexusData(blocks: Vector[NexusBlock]) {
 
 
+  /** Find list of block names.*/
+  def blockNames: Vector[String] = {
+    blocks.map(_.label)
+  }
 
   /** Find first block with a given name, as on Option.
   * Note that public blocks are supposed to occur only once, so
@@ -25,6 +29,15 @@ case class NexusData(blocks: Vector[NexusBlock]) {
     }
   }
 
+
+  def commandNames(blockName: String): Vector[String] = {
+    val blockOption = block(blockName)
+    /*val block :  NexusBlock = blockOption match {
+      case  Some(nexusBlock)  => nexusBlock
+      case None => throw new Exception("No block found for " + blockName)
+    }*/
+    blockOption.get.commandNames
+  }
 
   /**
   */

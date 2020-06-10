@@ -46,5 +46,5 @@ lazy val docs = project       // new documentation project
   .enablePlugins(MdocPlugin)
   .settings(
     mdocIn := file("guide"),
-    mdocOut := file("mdocs")
+    mdocOut := file("docs")
   )

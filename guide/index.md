@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Nexus
+title: Nexus library
 ---
 
 The `nexus` package is a cross-platform library for parsing data in NEXUS format.

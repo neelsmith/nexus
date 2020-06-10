@@ -6,7 +6,7 @@ title: Quick start
 
 
 
-### Create and `NexusData` set
+### Create and explore a `NexusData` set
 
 Import the library, and use the `NexusSource` object to load a dataset from a URL or local file.
 
@@ -35,4 +35,48 @@ nexus.blockNames
 //   "MESQUITECHARMODELS",
 //   "MESQUITE"
 // )
+```
+
+## Extract a named block
+
+```scala
+val taxaOption = nexus.block("taxa")
+```
+
+The result is a Scala `Option`.
+
+```scala
+val taxa = taxaOption match {
+  case Some(block)  => block
+  case None => throw new Exception("No block found for TAXA")
+}
+```
+
+
+## What's in a block?
+
+Blocks have a label and list of commands.
+
+```scala
+taxa.label
+// res1: String = "TAXA"
+
+taxa.commands.size
+// res2: Int = 3
+```
+
+Find the names of commands in a block:
+
+```scala
+taxa.commandNames
+// res3: Vector[String] = Vector("TITLE", "DIMENSIONS", "TAXLABELS")
+```
+
+
+## What's in a command?
+
+Commands have names and an argument string.
+
+```scala
+
 ```
