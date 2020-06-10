@@ -195,7 +195,9 @@ class NexusSpec extends FlatSpec {
     val nexus = Nexus(nexusSrc)
     val expectedRows = 10
     val matrix =  nexus.commandLines("data", "matrix")
-    assert(matrix.size == expectedRows)
+    assert(matrix.size == 1)
+    assert(matrix.head.size == expectedRows)
+
   }
 
 

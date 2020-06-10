@@ -31,6 +31,8 @@ class NexusSpecMulti extends FlatSpec {
     val dims = "dimensions ntax=5;"
     assert(taxaBlock.head.trim == dims)
     assert(taxaBlock.last.trim == ";")
-
   }
+
+
+  
 }

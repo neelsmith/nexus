@@ -56,8 +56,13 @@ case class Nexus(nexusString: String) extends LogSupport {
   * @param blockName Name of block.
   * @param commandName Name of command to extract.
   */
-  def commandLines(blockName: String, commandName: String): Vector[String] = {
-    extractLines(linesForBlock(blockName), commandName, ";")
+  def commandLines(blockName: String, commandName: String): Vector[Vector[String]] = {
+    val commands = for (bl <- linesForBlockMulti(blockName)) yield {
+      val cmds = Nexus.extractLinesMulti(bl, commandName,";")
+      cmds
+    }
+    commands.flatten
+    //extractLines(linesForBlock(blockName), commandName, ";")
 
   }
 
@@ -70,10 +75,14 @@ case class Nexus(nexusString: String) extends LogSupport {
     commandLines(blockName, commandName).mkString("\n")
   }
 
-  /** Extract lines for the data block.*/
+  /** Extract lines for the data block.
+  * Assuming NEXUS files can only have one data block?
+  */
   def dataLines : Vector[String] = linesForBlock("data")
 
-  /** Extract unaltered contents of DATA block.*/
+  /** Extract unaltered contents of DATA block.
+  * Assuming NEXUS files can only have one data block?
+  */
   def dataBlock : String = block("data")
 
   /** Extract unaltered text contents of a labelled block.
@@ -87,7 +96,6 @@ case class Nexus(nexusString: String) extends LogSupport {
     } else {
       matches.head.mkString("\n")
     }
-    //linesForBlock(blockLabel, true).mkString("\n")
   }
 
 
@@ -113,11 +121,12 @@ case class Nexus(nexusString: String) extends LogSupport {
   def linesForBlock(blockLabel: String,
     srcLines: Vector[String],
     includeComments: Boolean): Vector[String] = {
-
-    val blockInit = "begin " + blockLabel.toLowerCase + ";"
-    val blockEnd = "end;"
-    // remove comments here if needed
-    extractLines(srcLines, blockInit, blockEnd)
+      val blocks = linesForBlockMulti(blockLabel, srcLines, includeComments)
+      blocks.size match {
+        case 0 => Vector.empty[String]
+        case 1 => blocks(0)
+        case _ => throw new Exception(s"Error: found ${blocks.size} blocks labelled ${blockLabel}")
+      }
   }
 
 
@@ -134,6 +143,7 @@ case class Nexus(nexusString: String) extends LogSupport {
     Nexus.extractLinesMulti(srcLines, blockInit, blockEnd)
   }
 
+/*
   @tailrec final def extractLines(srcLines: Vector[String],
     blockInit: String,
     blockEnd: String,
@@ -167,7 +177,7 @@ case class Nexus(nexusString: String) extends LogSupport {
           }
         }
       }
-  }
+  }*/
 }
 
 
