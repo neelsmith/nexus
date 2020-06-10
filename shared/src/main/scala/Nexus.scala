@@ -15,7 +15,7 @@ import scala.scalajs.js.annotation._
 import scala.annotation.tailrec
 
 @JSExportAll
-case class Nexus(nexusString: String) extends LogSupport {
+case class NexusParser(nexusString: String) extends LogSupport {
 
 
   /** Nexus format is line-oriented, so work with
@@ -38,12 +38,27 @@ case class Nexus(nexusString: String) extends LogSupport {
   }
 
 
-  // Find command names within a block
+  /** Find command names within a single block.  Assumes that
+  * we can use the [[block]] method to extract a single
+  * block of lines.
+  *
+  * @param blockName Name of block to extract command names from.
+  */
   def commandNames(blockName: String) : Vector[String] = {
     val textChunks = block(blockName).split(";").toVector
-    val trimmedUp = textChunks.map(chunk => Nexus.extractCommand(chunk.trim))
+    val trimmedUp = textChunks.map(chunk => NexusParser.extractCommandName(chunk.trim))
     trimmedUp.distinct.filter(_.nonEmpty)
   }
+
+  /** Chunk the text of a NEXUS block into a series of
+  * Nexus commands.
+  *
+  * @param blockName Name of block to chunk.
+  */
+  def commands(blockName: String) : Vector[String] = {
+     block(blockName).split(";").toVector
+  }
+
 
   /** Extract all occurrences of a Nexus command from Nexus blocks
   * of a given name.  Vectors of command lines are further grouped in Vectors,
@@ -54,7 +69,7 @@ case class Nexus(nexusString: String) extends LogSupport {
   */
   def commandLines(blockName: String, commandName: String): Vector[Vector[String]] = {
     val commands = for (bl <- linesForBlocks(blockName)) yield {
-      val cmds = Nexus.extractLinesMulti(bl, commandName,";")
+      val cmds = NexusParser.extractLines(bl, commandName,";")
       cmds
     }
     commands.flatten
@@ -66,7 +81,11 @@ case class Nexus(nexusString: String) extends LogSupport {
   * @param commandName Name of command.
   */
   def command(blockName: String, commandName: String): String = {
-    commandLines(blockName, commandName).mkString("\n")
+    val nestedLines = commandLines(blockName, commandName)
+    val blockString = for (blck <- nestedLines) yield {
+      blck.mkString("\n")
+    }
+    blockString.mkString("\n")
   }
 
   /** Extract lines for the data block.
@@ -79,7 +98,8 @@ case class Nexus(nexusString: String) extends LogSupport {
   */
   def dataBlock : String = block("data")
 
-  /** Extract unaltered text contents of a labelled block.
+  /** Extract unaltered text contents of a labelled block
+  * that appears only once in the Nexus source.
   *
   * @param blockLabel Label of block to extract.
   */
@@ -93,11 +113,17 @@ case class Nexus(nexusString: String) extends LogSupport {
   }
 
 
+  /** Extract unaltered text contents for possibly multiple
+  * occurrences of a labelled block.
+  *
+  * @param blockLabel Label of block to extract.
+  */
   def blocks(blockLabel: String) : String = {
     linesForBlocks(blockLabel, true).map(bl => bl.mkString("\n")).mkString("\n")
   }
 
-  /** Extract lines from source data contained with a named block.
+  /** Extract lines from source data contained with a named block
+  * occuring only once in the Nexus source.
   *
   * @param blockLabel Label of block to extract.
   * @param includeComments True if comment lines should be included.
@@ -105,7 +131,9 @@ case class Nexus(nexusString: String) extends LogSupport {
   def linesForBlock(blockLabel: String, includeComments: Boolean = false) : Vector[String] = {
     linesForBlock(blockLabel, lines, includeComments )
   }
-  /**  Extract lines from source data contained with a named block.
+
+  /**  Extract lines from source data contained with a named block
+  * occuring only once in the Nexus source.
   *
   * @param blockLabel Label of block to extract.
   * @param srcLines Lines of source data to extract from.
@@ -123,9 +151,26 @@ case class Nexus(nexusString: String) extends LogSupport {
   }
 
 
+
+  /**  Extract all lines from source data contained with blocks
+  * of a given name.  Vectors of lines are further grouped in Vectors,
+  * one Vector per block.
+  *
+  * @param blockLabel Label of block to extract.
+  * @param includeComments True if comment lines should be included.
+  */
   def linesForBlocks(blockLabel: String, includeComments: Boolean = false) : Vector[Vector[String]] = {
     linesForBlocks(blockLabel, lines, includeComments )
   }
+
+  /**  Extract all lines from source data contained with blocks
+  * of a given name.  Vectors of lines are further grouped in Vectors,
+  * one Vector per block.
+  *
+  * @param blockLabel Label of block to extract.
+  * @param srcLines Lines of Nexus data to extract from.
+  * @param includeComments True if comment lines should be included.
+  */
   def linesForBlocks(blockLabel: String,
     srcLines: Vector[String],
     includeComments: Boolean): Vector[Vector[String]] = {
@@ -133,7 +178,7 @@ case class Nexus(nexusString: String) extends LogSupport {
     val blockInit = "begin " + blockLabel.toLowerCase + ";"
     val blockEnd = "end;"
     // remove comments here if needed
-    Nexus.extractLinesMulti(srcLines, blockInit, blockEnd)
+    NexusParser.extractLines(srcLines, blockInit, blockEnd)
   }
 
 }
@@ -141,7 +186,7 @@ case class Nexus(nexusString: String) extends LogSupport {
 /** The Nexus object provides some string processing methods that
 * implement specific conventions of the NEXUS file format.
 */
-object Nexus extends LogSupport {
+object NexusParser extends LogSupport {
 
 
   /** Recursively extract the command name from a Nexus command chunk
@@ -150,13 +195,13 @@ object Nexus extends LogSupport {
   * @param src Command string.
   * @param result Characters extracted so far.
   */
-  @tailrec final def extractCommand(src: String, result: String = "") : String = {
+  @tailrec final def extractCommandName(src: String, result: String = "") : String = {
     if (src.isEmpty) {
       result
     } else if (src.head.isWhitespace) {
       result
     } else {
-      extractCommand(src.tail, result :+ src.head)
+      extractCommandName(src.tail, result :+ src.head)
     }
   }
 
@@ -171,7 +216,7 @@ object Nexus extends LogSupport {
   * @param results Vectors of accumulated lines for each block.
   * @param inBlock True if we have seen opening pattern.
   */
-  @tailrec final def extractLinesMulti(srcLines: Vector[String],
+  @tailrec final def extractLines(srcLines: Vector[String],
       blockInit: String,
       blockEnd: String,
       current: Vector[String] = Vector.empty[String],
@@ -191,7 +236,7 @@ object Nexus extends LogSupport {
           }
 
           val newResults = results :+ newCurrent
-          extractLinesMulti(srcLines.tail, blockInit, blockEnd , Vector.empty[String], newResults, false)
+          extractLines(srcLines.tail, blockInit, blockEnd , Vector.empty[String], newResults, false)
 
         } else {
           debug(s"blockInit: ${blockInit}\nLine: #${srcLines.head.trim}#")
@@ -206,18 +251,18 @@ object Nexus extends LogSupport {
             }
 
             debug("Found init, prepending new Val " + newVal)
-            extractLinesMulti(newSrcLines, blockInit, blockEnd, current, results, true)
+            extractLines(newSrcLines, blockInit, blockEnd, current, results, true)
 
           } else {
             debug("NOT in block begin")
             if (inBlock) {
               // Add line to accumulated results:
               val newCurrent = current :+ srcLines.head
-              extractLinesMulti(srcLines.tail, blockInit, blockEnd, newCurrent, results, inBlock)
+              extractLines(srcLines.tail, blockInit, blockEnd, newCurrent, results, inBlock)
 
             } else {
               // Not in block: ignore line
-              extractLinesMulti(srcLines.tail, blockInit, blockEnd, current, results, inBlock)
+              extractLines(srcLines.tail, blockInit, blockEnd, current, results, inBlock)
             }
           }
         }

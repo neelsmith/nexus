@@ -19,20 +19,18 @@ class NexusSpecMulti extends FlatSpec {
       ;
     end;
     more data here but we're already done."""
-    val taxa = Nexus(nexusString).linesForBlocks("taxa")
+
+    val taxa = NexusParser(nexusString).linesForBlocks("taxa")
     assert(taxa.size == 1)
 
-    val expectedLines = 8
     val taxaBlock = taxa.head.filter(_.nonEmpty)
-
-
+    val expectedLines = 8
     assert(taxaBlock.size == expectedLines)
 
     val dims = "dimensions ntax=5;"
     assert(taxaBlock.head.trim == dims)
     assert(taxaBlock.last.trim == ";")
   }
-
 
 
 }
