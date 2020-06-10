@@ -23,7 +23,7 @@ import scala.annotation.tailrec
 
 @JSExportAll
 case class Nexus(nexusString: String) extends LogSupport {
-  //Logger.setDefaultLogLevel(LogLevel.DEBUG)
+
 
   /** Nexus format is line-oriented, so work with
   * data as a Vector of Strings.
@@ -41,7 +41,7 @@ case class Nexus(nexusString: String) extends LogSupport {
   */
   def blockNames: Vector[String] = {
     val blockBeginnings = lines.filter(_.trim.toLowerCase.startsWith("begin"))
-    blockBeginnings.map(ln => ln.replaceFirst("[ ]*[bB][eE][gG][iI][nN][ ]+", "").replaceFirst(";[ ]*$",""))
+    blockBeginnings.map(ln => ln.replaceFirst("(?i)[ ]*begin", "").replaceFirst(";[ ]*$",""))
   }
 
 
@@ -111,17 +111,8 @@ case class Nexus(nexusString: String) extends LogSupport {
   }
 
 
-  /** Recursively extract lines from a list of lines contained
-  * by a given opening/closing patterns. Opening/closing patterns are the
-  * case-insensitive contents of a line that may be preceded or followed by white space.
-  *
-  * @param srcLines List of lines to process.
-  * @param blockInit Opening pattern.
-  * @param blockEnd Closing pattern.
-  * @param results Accumulated lines to keep so far.
-  * @param inBlock True if we have seen opening pattern.
-  */
-@tailrec final def extractLines(srcLines: Vector[String],
+
+  @tailrec final def extractLines(srcLines: Vector[String],
     blockInit: String,
     blockEnd: String,
     results: Vector[String] = Vector.empty[String],
@@ -155,7 +146,62 @@ case class Nexus(nexusString: String) extends LogSupport {
         }
       }
   }
+}
 
 
+object Nexus extends LogSupport {
+   Logger.setDefaultLogLevel(LogLevel.INFO)
+    /** Recursively extract lines from a list of lines contained
+    * by a given opening/closing patterns. Opening/closing patterns are the
+    * case-insensitive contents of a line that may be preceded or followed by white space.
+    *
+    * @param srcLines List of lines to process.
+    * @param blockInit Opening pattern.
+    * @param blockEnd Closing pattern.
+    * @param results Accumulated lines to keep so far.
+    * @param inBlock True if we have seen opening pattern.
+    */
+  @tailrec final def extractLinesMulti(srcLines: Vector[String],
+      blockInit: String,
+      blockEnd: String,
+      current: Vector[String] = Vector.empty[String],
+      results: Vector[Vector[String]] = Vector.empty[Vector[String]],
+      inBlock: Boolean = false): Vector[Vector[String]] = {
+        debug(s"inblock? ${inBlock}")
+        if (srcLines.isEmpty) {
+          results
 
+        } else if (inBlock && srcLines.head.trim.toLowerCase.endsWith(blockEnd.toLowerCase)) {
+          // Found end of block:
+          val newVal = srcLines.head.trim.replaceFirst("(?i)" + blockEnd,"")
+          val newCurrent = current :+ newVal
+          val newResults = results :+ newCurrent
+          extractLinesMulti(srcLines.tail, blockInit, blockEnd , Vector.empty[String], newResults, false)
+
+        } else {
+          debug(s"blockInit: ${blockInit}\nLine: #${srcLines.head.trim}#")
+          if (srcLines.head.trim.toLowerCase.startsWith(blockInit.toLowerCase)) {
+            debug("FOUND BLOCK BEGIN")
+            // Found block beginning:
+            val newVal = srcLines.head.trim.replaceFirst("(?i)" + blockInit,"")
+            val newSrcLines = newVal +: srcLines.tail
+            debug("Found init, prepending new Val " + newVal)
+            extractLinesMulti(newSrcLines, blockInit, blockEnd, current, results, true)
+
+          } else {
+            debug("NOT in block begin")
+            if (inBlock) {
+              // Accumulate results:
+
+              //val newResults = results :+ srcLines.head
+              val newCurrent = current :+ srcLines.head
+              extractLinesMulti(srcLines.tail, blockInit, blockEnd, newCurrent, results, inBlock)
+
+            } else {
+              // ignore
+              extractLinesMulti(srcLines.tail, blockInit, blockEnd, current, results, inBlock)
+            }
+          }
+        }
+    }
 }
