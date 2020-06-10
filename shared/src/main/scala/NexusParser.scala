@@ -26,6 +26,24 @@ case class NexusParser(nexusString: String) extends LogSupport {
   require(lines.head.toLowerCase.startsWith("#nexus"), "Invalid NEXUS format: required header line '#NEXUS' missing.")
 
 
+
+  def nexusBlocks: Vector[NexusBlock] = {
+    blockNames.map (blockName => {
+      val cmdNames = commandNames(blockName)
+      val lines = for (cName <- cmdNames) yield {
+        command(blockName, cName )
+      }
+
+      val nexusCommands = lines.map(ln => {
+        val cName = NexusParser.extractCommandName(ln)
+        val cmd =  NexusCommand(cName, "DATA HERE")
+        cmd
+      })
+      NexusBlock(blockName, nexusCommands)
+    }
+    )
+  }
+
   /** Identify all block names in this Nexus.
   * Lines identifying block names are of the form "BEGIN <blockname> ;"
   * The literal string BEGIN is case insensitive.  The lines may have leading and/or trailing white space.
