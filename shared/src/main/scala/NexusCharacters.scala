@@ -7,6 +7,7 @@ package edu.holycross.shot.nexus
 */
 case class NexusCharacters(label: String, characters: String) {
 
+  def size: Int = characters.size
 
   /** True if both label and characters are empty. */
   def isEmpty: Boolean = {
