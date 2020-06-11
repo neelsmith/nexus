@@ -1,11 +1,14 @@
 package edu.holycross.shot.nexus
 
-case class NexusMatrix(rows: Vector[NexusCharacters]) {
-
-
+case class NexusMatrix(src: Vector[NexusCharacters]) {
 
   override def toString: String = {
     "Matrix with " + data.size + " rows."
+  }
+
+
+  def rows: Vector[NexusCharacters] = {
+    src.filterNot(_.isEmpty)
   }
 
   /** Format delimited-text representation.

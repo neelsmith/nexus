@@ -7,6 +7,12 @@ package edu.holycross.shot.nexus
 */
 case class NexusCharacters(label: String, characters: String) {
 
+
+  /** True if both label and characters are empty. */
+  def isEmpty: Boolean = {
+    label.isEmpty && characters.isEmpty
+  }
+
   /** Format delimited-text representation.
   *
   * @param separator String value to separate label and characters.

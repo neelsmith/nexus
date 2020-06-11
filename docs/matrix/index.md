@@ -19,7 +19,7 @@ The `NexusMatrix` object has a Vector of `NexusCharacters`, named `rows`.
 
 ```scala
 nexus.matrix.rows.size
-// res1: Int = 3024
+// res1: Int = 2992
 ```
 
 The `NexusMatrix` also gives us access to the labels and data for each row.  Let's sample a few:

@@ -1,6 +1,8 @@
 ## Release notes
 
-**1.3.0**: adds `toString` on `DataMatrix`
+**1.3.1**: eliminates empty rows from `DataMatrix` object.
+
+**1.3.0**: adds `toString` on `DataMatrix`.
 
 **1.2.0**: adds text formatting methods.
 
