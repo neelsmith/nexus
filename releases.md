@@ -1,5 +1,7 @@
 ## Release notes
 
+**1.4.1**: correct publication of binaries to bintray.
+
 **1.4.0**: adds `size` method on `NexusCharacters`.
 
 **1.3.1**: eliminates empty rows from `DataMatrix` object.

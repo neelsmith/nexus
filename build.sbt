@@ -18,7 +18,7 @@ lazy val crossed = crossProject(JSPlatform, JVMPlatform).in(file(".")).
   settings(
     organization :=  "edu.holycross.shot",
     name := "nexus",
-    version := "1.4.0",
+    version := "1.4.1",
     licenses += ("GPL-3.0",url("https://opensource.org/licenses/gpl-3.0.html")),
 
     resolvers += Resolver.jcenterRepo,
@@ -50,6 +50,6 @@ lazy val docs = project       // new documentation project
     mdocOut := file("docs"),
     mdocExtraArguments := Seq("--no-link-hygiene"),
     mdocVariables := Map(
-     "VERSION" -> "1.4.0"
+     "VERSION" -> "1.4.1"
    )
   )

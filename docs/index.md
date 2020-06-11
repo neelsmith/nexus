@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "Nexus library, version 1.4.0"
+title: "Nexus library, version 1.4.1"
 ---
 
 
