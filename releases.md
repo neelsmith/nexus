@@ -1,5 +1,7 @@
 ## Release notes
 
+**1.3.0**: adds `toString` on `DataMatrix`
+
 **1.2.0**: adds text formatting methods.
 
 **1.1.0**:  adds `DataMatrix` and related classes.

@@ -2,6 +2,12 @@ package edu.holycross.shot.nexus
 
 case class NexusMatrix(rows: Vector[NexusCharacters]) {
 
+
+
+  override def toString: String = {
+    "Matrix with " + data.size + " rows."
+  }
+
   /** Format delimited-text representation.
   *
   * @param separator String value to separate label and characters.

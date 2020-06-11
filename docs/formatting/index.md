@@ -3,7 +3,7 @@ title: "Text formatting"
 layout: page
 ---
 
-The `NexusData` and `NexusBlock` classes override the default `toString` with a summary of component elements.
+The `NexusData` and `NexusBlock` classes override the default `toString` methods with a summary of component elements.
 
 
 ```scala
