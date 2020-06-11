@@ -1,5 +1,7 @@
 ## Release notes
 
+**1.4.0**: adds `size` method on `NexusCharacters`.
+
 **1.3.1**: eliminates empty rows from `DataMatrix` object.
 
 **1.3.0**: adds `toString` on `DataMatrix`.
