@@ -16,6 +16,7 @@ lazy val root = (project in file("."))
 lazy val crossed = crossProject(JSPlatform, JVMPlatform).in(file(".")).
   // shared settings:
   settings(
+    organization :=  "edu.holycross.shot",
     name := "nexus",
     version := "1.4.0",
     licenses += ("GPL-3.0",url("https://opensource.org/licenses/gpl-3.0.html")),
