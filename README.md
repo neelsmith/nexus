@@ -13,7 +13,7 @@ The parsing is based largely on descriptions of the Nexus file format linked fro
 - <http://hydrodictyon.eeb.uconn.edu/eebedia/index.php/Phylogenetics:_NEXUS_Format>
 
 
-## Current version: 1.1.0
+## Current version: 1.2.0
 
 Status: early development.  
 
