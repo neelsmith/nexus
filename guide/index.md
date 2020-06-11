@@ -8,7 +8,7 @@ title: "Nexus library, version @VERSION@"
 The `nexus` package is a cross-platform library for parsing data in NEXUS format.
 
 
-Quick start](./quick/)
+[Quick start](./quick/)
 
 > Documentation on this site has been built with [mdoc](https://scalameta.org/mdoc/).  All code blocks are the results of code running correctly on the JVM.
 
