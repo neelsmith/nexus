@@ -43,6 +43,12 @@ val taxa = taxaOption match {
 }
 ```
 
+Of course if you are using a block name you've found in the list of block names, you can directly `get` it:
+
+
+```scala mdoc
+val assumed = nexus.block("assumptions").get
+```
 
 ## What's in a block?
 

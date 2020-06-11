@@ -14,4 +14,9 @@ case class NexusCharacters(label: String, characters: String) {
   def delimited(separator: String = "#"): String = {
     s"${label}${separator}${characters}"
   }
+
+
+  override def toString: String = {
+    delimited(" ")
+  }
 }

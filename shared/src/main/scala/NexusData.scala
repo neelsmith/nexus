@@ -7,6 +7,9 @@ package edu.holycross.shot.nexus
 */
 case class NexusData(blocks: Vector[NexusBlock]) {
 
+  def nexusString: String = {
+    ("!#NEXUS" +: blocks.map(_.nexusString)).mkString("\n")
+  }
 
   /** Find list of block names.*/
   def blockNames: Vector[String] = {
