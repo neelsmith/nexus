@@ -7,6 +7,11 @@ package edu.holycross.shot.nexus
 */
 case class NexusData(blocks: Vector[NexusBlock]) {
 
+
+  override def toString: String = {
+    "Nexus data set [" + blockNames.mkString(", ") + "]"
+  }
+
   def nexusString: String = {
     ("!#NEXUS" +: blocks.map(_.nexusString)).mkString("\n")
   }

@@ -18,7 +18,6 @@ val dataUrl = "https://raw.githubusercontent.com/neelsmith/nexus/master/jvm/src/
 val nexus = NexusSource.fromUrl(dataUrl)
 
 // or NexusSource.fromFile("FILE_NAME")
-
 ```
 
 See what blocks it contains:
@@ -30,7 +29,7 @@ nexus.blockNames
 
 Block labels are case-insensitive in the NEXUS format.
 
-```scala mdoc:silent
+```scala mdoc
 val taxaOption = nexus.block("taxa")
 ```
 
