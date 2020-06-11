@@ -49,6 +49,6 @@ lazy val docs = project       // new documentation project
     mdocOut := file("docs"),
     mdocExtraArguments := Seq("--no-link-hygiene"),
     mdocVariables := Map(
-     "VERSION" -> "1.2.0"
+     "VERSION" -> "1.3.0"
    )
   )
